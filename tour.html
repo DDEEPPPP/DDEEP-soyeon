@@ -1,0 +1,120 @@
+<!-- Thymeleaf : 템플릿 엔진, html 태그에 속성을 추가해 동적으로 값을 추가하거나 처리 -->
+
+<!-- 프로젝트 구조 : src > main > java > com.example.demo > controller/dto.service(패키지)/demoApplication 로 위치
+정적파일(자바스크립트,css,이미지 등) : src > main > resource > static 에 위치 -->
+
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDEEP</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #343a40;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        li:hover {
+            cursor: pointer;
+            box-shadow: 2px 2px 5px #888888;
+        }
+
+        h3 {
+            margin-bottom: 10px;
+            color: #343a40;
+        }
+
+        p {
+            margin: 0;
+            color: #6c757d;
+        }
+
+        img {
+            width: 200px;
+            height: 150px;
+            border-radius: 10px;
+        }
+
+        #getTourList {
+            display: flex;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        #getTourList ul li {
+           width: 250px;
+            height: 350px;
+        }
+
+    </style>
+    <script src="/static/ajaxAPI.js"></script>
+</head>
+<body>
+<header>
+<h1>DDEEP</h1>
+    <nav>
+        <ul>
+            <!-- 근데 이 list 쭉 불러오는 부분은 페이지 이동보다는, ajax(비동기)방식으로 받아오는게 나을듯? 제이쿼리말고 방법찾아보기!-->
+            <li onclick="tourData()">관광지</li>
+            <li onclick="tourData()">팝업스토어</li>
+            <li onclick="tourData()">플리마켓</li>
+            <li onclick="tourData()">페스티벌</li>
+        </ul>
+    </nav>
+</header>
+<!-- 반복할 구조를 잘 찾을것 -->
+<div id="getTourList" >
+    <ul th:each="item : ${tourSpotList.items}">
+        <li th:unless="${#strings.contains(item.title, '동물병원')}" onclick="location.href='/detailPage'"> <!-- list 클릭시 상세페이지 이동 mapping-->
+            <!-- 지도 버튼 클릭시, 팝업으로 지도 정보 보여지게 ? -->
+            <input type="button" onclick="location.href='#'" value="지도" id="map">
+            <div>
+                <!-- 이미지 왜 안 불러와지냐.. => json 코드의 배열 및 오브젝트 구조를 잘 파악할것. -->
+                <!-- 현재 api 로 받아온 json 은 TourSpotResponse라는 큰 틀 안에 각 값들 중 items 배열안에 값, 그리고 또 그 값들 중 또 값이 있고 의 반복.-->
+                <!-- 내가 찾아올 img의 path 는 TourSpotResponse > items > repPhoto > photoid > imgpath 임 -->
+                <!-- 따라서 굳이 DTO별 메서드를 따로 잡을 필요없이 큰 틀을 불러오는 하나의 메서드를 두고, 컨트롤러에 연결해서 타고타고 들어오면 됨 -->
+                <img th:id="${item.title}" th:src="${item.repPhoto.photoid.imgpath}" th:alt="${item.title}">
+            </div>
+            <h3 th:utext="${item.title != null ? item.title : ''}"></h3>
+            <p th:utext="${item.address != null ? item.address : ''}"></p>
+            <p th:utext="${item.roadaddress != null ? item.roadaddress : ''}"></p>
+            <p th:utext="${item.introduction != null ? item.introduction : ''}"></p>
+            <p th:utext="${(item.phoneno != null) and (item.phoneno != '--') ? item.phoneno : ''}"></p>
+               <!-- 7p38jt90mb
+                2cjFEqdqNh3fxujFsEqnKs8kzP1tk1ib9iXhQvNK-->
+        </li>
+    </ul>
+</div>
+
+<!--
+    <script>
+        getTourApi();
+    </script>
+
+
+-->
+
+</body>
+</html>
