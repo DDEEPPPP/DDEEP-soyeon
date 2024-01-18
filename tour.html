@@ -72,7 +72,7 @@
 </head>
 <body>
 <header>
-    <h1>DDEEP</h1>
+    <h1><a href="tour">DDEEP</a></h1>
     <nav>
         <ul>
             <!-- 근데 이 list 쭉 불러오는 부분은 페이지 이동보다는, ajax(비동기)방식으로 받아오는게 나을듯? 제이쿼리말고 방법찾아보기!-->
@@ -84,9 +84,10 @@
     </nav>
 </header>
 <!-- 반복할 구조를 잘 찾을것 -->
-<div id="getTourList" >
+<div id="getTourList">
     <ul th:each="item : ${tourSpotList.items}">
-        <li th:unless="${#strings.contains(item.title, '동물병원')}" onclick="location.href='/detailPage'"> <!-- list 클릭시 상세페이지 이동 mapping-->
+        <li th:unless="${#strings.contains(item.title, '동물병원')}" onclick="location.href='/detailPage'">
+            <!-- list 클릭시 상세페이지 이동 mapping-->
             <!-- 지도 버튼 클릭시, 팝업으로 지도 정보 보여지게 ? -->
             <input type="button" onclick="location.href='#'" value="지도" id="map">
             <div>
@@ -111,13 +112,13 @@
     // 관광지 버튼 눌렀을때 : js로 외부 api url 받아와서 호출하고 json,xml 을 string 으로 파싱, 그리고 원하는 html 구조에 끼워넣기
     // 플리마켓,팝업스토어 : db 만들어서 각 정보 넣고 권한을 가진 유저가 create 한것도 db에 저장. 해당 리스트를 쭉 가져오기
     // 축제 : 외부 api + db
-    
+
     // 관광지
     // cate1 버튼 눌렀을때 실현될 함수
     function cate1Click() {
         Cate1ApiFetchAndParse();
     }
-    
+
     function Cate1ApiFetchAndParse() {
 
         const api_key = '70axhgpopy3z4k5f';
@@ -128,7 +129,8 @@
             .then(response => {
                 if (!response.ok) {
                     throw new Error('API fetch error!')
-                } return response.json();
+                }
+                return response.json();
             })
             // json 으로 응답하면 그 데이터를 파싱하고 화면에 표시해.
             .then((json) => {
@@ -137,10 +139,21 @@
                 let html = '';
                 data.forEach(element => {
                     console.log(element)
-                html += `
-                    <li>
-                            ${element.title}<br>
-                        </li>`;
+                    html += `
+               <div id="getTourList" >
+    <ul>
+        <li>
+            <div>
+                <img src="${element.repPhoto.photoid.imgpath}">
+            </div>
+            <h3>${element.title}</h3>
+            <p>${element.address}</p>
+            <p>${element.roadaddress}</p>
+            <p>${element.introduction}</p>
+            <p>${element.phoneno}</p>
+        </li>
+    </ul>
+</div>`;
                 });
                 document.getElementById('getTourList').innerHTML = `<ul>${html}</ul>`;
             })
@@ -150,7 +163,7 @@
     }
 
     document.getElementById('cate1Button').addEventListener('click', cate1Click);
-    
+
 </script>
 
 
