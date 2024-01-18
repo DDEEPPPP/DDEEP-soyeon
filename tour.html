@@ -60,24 +60,23 @@
             display: flex;
             width: 100%;
             flex-wrap: wrap;
-            justify-content: space-between;
+            justify-content: space-evenly;
         }
 
         #getTourList ul li {
-           width: 250px;
-            height: 350px;
+            width: 300px;
+            height: 450px;
         }
 
     </style>
-    <script src="/static/ajaxAPI.js"></script>
 </head>
 <body>
 <header>
-<h1>DDEEP</h1>
+    <h1>DDEEP</h1>
     <nav>
         <ul>
             <!-- 근데 이 list 쭉 불러오는 부분은 페이지 이동보다는, ajax(비동기)방식으로 받아오는게 나을듯? 제이쿼리말고 방법찾아보기!-->
-            <li onclick="tourData()">관광지</li>
+            <li id="cate1Button" onclick="cate1Click()">관광지</li>
             <li onclick="tourData()">팝업스토어</li>
             <li onclick="tourData()">플리마켓</li>
             <li onclick="tourData()">페스티벌</li>
@@ -102,19 +101,58 @@
             <p th:utext="${item.roadaddress != null ? item.roadaddress : ''}"></p>
             <p th:utext="${item.introduction != null ? item.introduction : ''}"></p>
             <p th:utext="${(item.phoneno != null) and (item.phoneno != '--') ? item.phoneno : ''}"></p>
-               <!-- 7p38jt90mb
-                2cjFEqdqNh3fxujFsEqnKs8kzP1tk1ib9iXhQvNK-->
+            <!-- 7p38jt90mb
+             2cjFEqdqNh3fxujFsEqnKs8kzP1tk1ib9iXhQvNK-->
         </li>
     </ul>
 </div>
 
-<!--
-    <script>
-        getTourApi();
-    </script>
+<script>
+    // 관광지 버튼 눌렀을때 : js로 외부 api url 받아와서 호출하고 json,xml 을 string 으로 파싱, 그리고 원하는 html 구조에 끼워넣기
+    // 플리마켓,팝업스토어 : db 만들어서 각 정보 넣고 권한을 가진 유저가 create 한것도 db에 저장. 해당 리스트를 쭉 가져오기
+    // 축제 : 외부 api + db
+    
+    // 관광지
+    // cate1 버튼 눌렀을때 실현될 함수
+    function cate1Click() {
+        Cate1ApiFetchAndParse();
+    }
+    
+    function Cate1ApiFetchAndParse() {
 
+        const api_key = '70axhgpopy3z4k5f';
+        let api_url = 'https://api.visitjeju.net/vsjApi/contents/searchList?apiKey=' + api_key + '&locale=kr&category=c1'
+        // fetch api 로 외부 api 에 get 으로 받아오기
+        // api url 호출해서 응답이 안되면 API fetch error 라고 던져, 그렇지 않으면 json 으로 응답해
+        fetch(api_url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('API fetch error!')
+                } return response.json();
+            })
+            // json 으로 응답하면 그 데이터를 파싱하고 화면에 표시해.
+            .then((json) => {
+                data = json.items;
 
--->
+                let html = '';
+                data.forEach(element => {
+                    console.log(element)
+                html += `
+                    <li>
+                            ${element.title}<br>
+                        </li>`;
+                });
+                document.getElementById('getTourList').innerHTML = `<ul>${html}</ul>`;
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+    }
+
+    document.getElementById('cate1Button').addEventListener('click', cate1Click);
+    
+</script>
+
 
 </body>
 </html>
